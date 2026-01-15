@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RCCG Peculiar Treasure Assembly | Welcome Home</title>
+    <link rel="icon" type="image/png" href="https://www.rccg.org/wp-content/uploads/2021/05/cropped-RCCG-LOGO-192x192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              rccg: {
+                green: '#006838',     // RCCG Deep Emerald
+                blue: '#1B1464',      // RCCG Royal Blue
+                red: '#ED1C24',       // RCCG Crimson
+                gold: '#C5A059',      // Elegant Gold
+                cream: '#FAFAF5',     // Warm background
+                surface: '#FFFFFF',   
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              serif: ['Playfair Display', 'serif'],
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'fade-in': 'fadeIn 1.2s ease-out forwards',
+              'slide-in': 'slideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'slow-zoom': 'slowZoom 45s ease-in-out infinite alternate',
+              'loading-bar': 'loadingBar 1.5s ease-in-out infinite',
+              'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideIn: {
+                '0%': { opacity: '0', transform: 'translateX(20px)' },
+                '100%': { opacity: '1', transform: 'translateX(0)' },
+              },
+              slowZoom: {
+                '0%': { transform: 'scale(1)' },
+                '100%': { transform: 'scale(1.15)' },
+              },
+              loadingBar: {
+                '0%': { transform: 'translateX(-100%)' },
+                '50%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(100%)' }
+              },
+              pulseGlow: {
+                '0%, 100%': { transform: 'scale(1)', boxShadow: '0 10px 15px -3px rgba(237, 28, 36, 0.3)' },
+                '50%': { transform: 'scale(1.05)', boxShadow: '0 20px 30px -5px rgba(237, 28, 36, 0.6)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #FFFFFF;
+        color: #111111;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Hide Scrollbar for clean look but keep functionality */
+      ::-webkit-scrollbar {
+        width: 0px; 
+        background: transparent; 
+      }
+      ::selection {
+        background: #E6F4EA; /* Light Green selection */
+        color: #006838;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
