@@ -18,11 +18,11 @@ const Contact: React.FC = () => {
              <h3 className="font-serif text-3xl text-black mb-2">Visit Us</h3>
              <div className="w-10 h-px bg-rccg-gold mx-auto mb-6"></div>
              <p className="text-gray-500 font-light leading-relaxed mb-8">
-                Peculiar Treasure Assembly<br />
-                Oluwa Abijo GRA,<br />
-                Lekki-Epe Expy, Lagos.
+                The Ambassadors<br />
+                Plot 3010, Leijja Close, Beechwood Estate<br />
+                Imalete Ibeju-Lekki-Epe Expy, Lagos.
              </p>
-             <a href="mailto:hello@peculiartreasure.org" className="text-sm font-bold uppercase tracking-widest text-black border-b border-gray-200 hover:border-black pb-1 transition-all">
+             <a href="mailto:hello@rccgtheambassadors.org" className="text-sm font-bold uppercase tracking-widest text-black border-b border-gray-200 hover:border-black pb-1 transition-all">
                 Get Directions
              </a>
           </div>

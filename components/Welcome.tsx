@@ -75,7 +75,7 @@ const Welcome: React.FC<WelcomeProps> = ({ currentUser, onLogin, isAuthLoading }
                       <Camera size={32} className="text-white/80" />
                    </div>
                    <h3 className="text-3xl font-black text-white tracking-tighter mb-1 font-sans">
-                      PTA <span className="text-rccg-red group-hover:text-white transition-colors">SOCIALS</span>
+                      AMBASSADORS <span className="text-rccg-red group-hover:text-white transition-colors">SOCIALS</span>
                    </h3>
                    <p className="text-[10px] uppercase tracking-widest text-gray-500 group-hover:text-gray-300 transition-colors">
                       Connect . Share . Inspire

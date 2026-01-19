@@ -14,7 +14,7 @@ const events = [
   {
     day: "10",
     month: "FEB",
-    title: "Night of Glory",
+    title: "Night Vigil",
     time: "10:00 PM",
     desc: "Monthly vigil for spiritual warfare and breakthrough prayers.",
     location: "Main Auditorium"
@@ -23,9 +23,9 @@ const events = [
     day: "19",
     month: "FEB",
     title: "Youth Summit",
-    time: "12:00 PM",
+    time: "10:00 PM",
     desc: "Empowering the next generation for kingdom impact.",
-    location: "Youth Hall"
+    location: "Main Auditorium"
   }
 ];
 

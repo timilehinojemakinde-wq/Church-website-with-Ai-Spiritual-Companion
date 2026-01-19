@@ -8,7 +8,7 @@ const INITIAL_POSTS: SocialPost[] = [
   {
     id: '1',
     userId: 'admin',
-    userName: 'PTA Media Team',
+    userName: 'Ambassador Media Team',
     userAvatar: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?q=80&w=100&auto=format&fit=crop',
     imageUrl: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?q=80&w=800&h=800&auto=format&fit=crop',
     caption: 'High praise during today\'s Celebration Service! The atmosphere was electric. 🔥🙌 #SundayService #PTA',

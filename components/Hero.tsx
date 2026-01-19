@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, X, BookOpen, Volume2, Loader2, Square, Feather, HandHeart, Bot, ShieldAlert, BrainCircuit, Hammer, Footprints } from 'lucide-react';
 import { generateDevotional, generateDevotionalAudio } from '../services/geminiService';
+import getSpiritualGuidance from '../services/openaiService';
 import { DevotionalResponse, LoadingState } from '../types';
 
 const Hero: React.FC = () => {
@@ -35,13 +36,14 @@ const Hero: React.FC = () => {
   
   const responseRef = useRef<HTMLDivElement>(null);
 
+  // Handle AI Counseling Request
   const handleCounselingRequest = async () => {
     if (!input.trim()) return;
     setStatus(LoadingState.LOADING);
     stopAudio();
     try {
-      const data = await generateDevotional(input);
-      setResponse(data);
+      const aiReply = await getSpiritualGuidance(input);
+      setResponse(aiReply);
       setStatus(LoadingState.SUCCESS);
     } catch (error) {
       console.error(error);
