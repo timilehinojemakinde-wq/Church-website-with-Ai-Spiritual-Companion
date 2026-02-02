@@ -1,0 +1,48 @@
+
+[
+  {
+    "id": "prov_3_5_6",
+    "book": "Proverbs",
+    "chapter": 3,
+    "verses": "5-6",
+    "translation": "NIV",
+    "topics": ["guidance", "decision", "career", "direction"],
+    "text": "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to Him, and He will make your paths straight."
+  },
+  {
+    "id": "phil_4_6_7",
+    "book": "Philippians",
+    "chapter": 4,
+    "verses": "6-7",
+    "translation": "NIV",
+    "topics": ["anxiety", "fear", "peace"],
+    "text": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus."
+  },
+  {
+    "id": "jer_29_11",
+    "book": "Jeremiah",
+    "chapter": 29,
+    "verses": "11",
+    "translation": "NIV",
+    "topics": ["future", "hope", "plans"],
+    "text": "'For I know the plans I have for you,' declares the Lord, 'plans to prosper you and not to harm you, plans to give you hope and a future.'"
+  },
+  {
+    "id": "psalm_32_8",
+    "book": "Psalms",
+    "chapter": 32,
+    "verses": "8",
+    "translation": "NIV",
+    "topics": ["guidance", "instruction", "direction"],
+    "text": "I will instruct you and teach you in the way you should go; I will counsel you with my loving eye on you."
+  },
+  {
+    "id": "isaiah_30_21",
+    "book": "Isaiah",
+    "chapter": 30,
+    "verses": "21",
+    "translation": "NIV",
+    "topics": ["guidance", "direction", "hearing God's voice"],
+    "text": "Whether you turn to the right or to the left, your ears will hear a voice behind you, saying, 'This is the way; walk in it.'"
+  }
+]

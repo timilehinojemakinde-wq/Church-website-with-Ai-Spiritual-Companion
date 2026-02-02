@@ -13,31 +13,7 @@ const getApiKey = (): string => {
 const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 export const generateDevotional = async (topic: string): Promise<DevotionalResponse> => {
-  const prompt = `
-    You are a wise, loving, and deeply empathetic spiritual friend sitting across the table from someone who needs to talk.
-    
-    **THE CONTEXT:**
-    Your friend just said to you: "${topic}"
-
-    **YOUR GOAL:**
-    Respond conversationally. Do not write a "sermon" or a "devotional entry." Write a **personal response** to a friend.
-    
-    **TONE GUIDELINES:**
-    1.  **Be Conversational:** Use "I", "You", and "We". Sound like a human, not a database.
-    2.  **Be Empathetic:** Validate their feelings immediately. Make them feel heard.
-    3.  **Be Simple:** Avoid religious jargon (no "beseech", "hath", "season"). Use everyday language.
-    4.  **Faith + Works:** Always suggest a physical action alongside the spiritual truth.
-
-    **REQUIRED JSON OUTPUT (Must strictly follow this schema):**
-    1. title: A short, warm 2-3 word phrase summing up your advice (e.g., "It's Okay to Rest").
-    2. empathy: The opening sentence of your conversation. Validate them warmly (e.g., "I can hear how heavy your heart is right now, and I want you to know it's okay to feel that way.").
-    3. scripture: A specific Bible verse (Text + Reference) that fits the conversation naturally.
-    4. wisdom: The core of your advice. Speak directly to them. Keep it simple and profound (approx 2 sentences).
-    5. action: A specific **PHYSICAL** step. Not just "pray". Something they can do with their hands or body (e.g., "Drink a glass of water," "Take a walk," "Write it down").
-    6. prayer: A short, 1-sentence prayer they can whisper right now.
-
-    Return ONLY raw JSON.
-  `;
+  const prompt = `You are an AI spiritual companion speaking in a formal pastoral tone. Ground guidance in the provided scriptures and return ONLY a JSON object that matches the DevotionalResponseV1 schema: title, empathy, scripture, wisdom, action, prayer. Aim for ~50 words total (allow 30-80). Do not fabricate scripture citations. The user's input: "${topic}"`;
 
   try {
     const response = await ai.models.generateContent({
@@ -48,12 +24,14 @@ export const generateDevotional = async (topic: string): Promise<DevotionalRespo
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            title: { type: Type.STRING, description: "Short warm title" },
-            empathy: { type: Type.STRING, description: "Conversational opening" },
-            scripture: { type: Type.STRING, description: "Bible verse" },
-            wisdom: { type: Type.STRING, description: "Conversational advice" },
-            action: { type: Type.STRING, description: "Physical action step" },
-            prayer: { type: Type.STRING, description: "Simple prayer" }
+            title: { type: Type.STRING, description: "Short formal title" },
+            empathy: { type: Type.STRING, description: "Formal empathetic opening" },
+            scripture: { type: Type.STRING, description: "Bible verse and reference" },
+            wisdom: { type: Type.STRING, description: "Concise pastoral wisdom" },
+            action: { type: Type.STRING, description: "Single immediate step" },
+            prayer: { type: Type.STRING, description: "Short blessing or prayer" },
+            schemaVersion: { type: Type.STRING },
+            wordCount: { type: Type.NUMBER }
           },
           required: ["title", "empathy", "scripture", "wisdom", "action", "prayer"]
         }

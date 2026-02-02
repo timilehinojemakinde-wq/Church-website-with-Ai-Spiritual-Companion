@@ -1,188 +1,254 @@
-
-import React, { useState } from 'react';
-import { Send, Sparkles, X, Copy, Check, BookOpen, Feather, Share2, Mail, MessageCircle } from 'lucide-react';
-import { generateDevotional } from '../services/geminiService';
+import React, { useState, useRef, useEffect } from 'react';
+import { Send, Sparkles } from 'lucide-react';
+import getSpiritualGuidance from '../services/openaiService';
 import { DevotionalResponse, LoadingState } from '../types';
+
+type ChatMsg = {
+  id: number;
+  role: 'user' | 'assistant';
+  text: string;
+  time: number;
+  meta?: Partial<DevotionalResponse>;
+};
+
+const MESSAGES_KEY = 'devotional_messages';
+const SETTINGS_KEY = 'devotional_settings';
+
+const DEFAULT_SETTINGS = {
+  enforceConcise: true,
+  conciseMaxWords: 80,
+  fontFamily: 'Inter, system-ui, Arial',
+  fontSize: 15,
+  borderRadius: 14,
+  persistToServer: false,
+};
 
 const DevotionalAI: React.FC = () => {
   const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [status, setStatus] = useState<LoadingState>(LoadingState.IDLE);
-  const [devotional, setDevotional] = useState<DevotionalResponse | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const chatRef = useRef<HTMLDivElement | null>(null);
 
-  const handleGenerate = async () => {
-    if (!input.trim()) return;
-    setStatus(LoadingState.LOADING);
-    setDevotional(null);
+  // settings
+  const [enforceConcise, setEnforceConcise] = useState<boolean>(DEFAULT_SETTINGS.enforceConcise);
+  const [conciseMaxWords, setConciseMaxWords] = useState<number>(DEFAULT_SETTINGS.conciseMaxWords);
+  const [fontFamily, setFontFamily] = useState<string>(DEFAULT_SETTINGS.fontFamily);
+  const [fontSize, setFontSize] = useState<number>(DEFAULT_SETTINGS.fontSize);
+  const [borderRadius, setBorderRadius] = useState<number>(DEFAULT_SETTINGS.borderRadius);
+  const [persistToServer, setPersistToServer] = useState<boolean>(DEFAULT_SETTINGS.persistToServer);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<number | null>(null);
+
+  // autoscroll
+  useEffect(() => {
+    const el = chatRef.current;
+    if (!el) return;
+    const t = setTimeout(() => { el.scrollTop = el.scrollHeight; }, 40);
+    return () => clearTimeout(t);
+  }, [messages, status]);
+
+  // load persisted
+  useEffect(() => {
     try {
-      const data = await generateDevotional(input);
-      setDevotional(data);
+      const raw = localStorage.getItem(MESSAGES_KEY);
+      if (raw) setMessages(JSON.parse(raw));
+    } catch (e) { /* ignore */ }
+    try {
+      const s = localStorage.getItem(SETTINGS_KEY);
+        if (s) {
+        const p = JSON.parse(s);
+        if (typeof p.enforceConcise === 'boolean') setEnforceConcise(p.enforceConcise);
+        if (typeof p.conciseMaxWords === 'number') setConciseMaxWords(p.conciseMaxWords);
+        if (typeof p.fontFamily === 'string') setFontFamily(p.fontFamily);
+        if (typeof p.fontSize === 'number') setFontSize(p.fontSize);
+        if (typeof p.borderRadius === 'number') setBorderRadius(p.borderRadius);
+        if (typeof p.persistToServer === 'boolean') setPersistToServer(p.persistToServer);
+      }
+    } catch (e) { /* ignore */ }
+  }, []);
+
+  // persist
+  useEffect(() => { try { localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages)); } catch (e) {} }, [messages]);
+  useEffect(() => { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({ enforceConcise, conciseMaxWords, fontFamily, fontSize, borderRadius, persistToServer })); } catch (e) {} }, [enforceConcise, conciseMaxWords, fontFamily, fontSize, borderRadius, persistToServer]);
+
+  const formatResponse = (d: DevotionalResponse) => {
+    const parts: string[] = [];
+    if (d.empathy) parts.push(d.empathy.trim());
+    if (d.wisdom) parts.push(d.wisdom.trim());
+    if (d.scripture) parts.push(`Scripture: ${d.scripture.trim()}`);
+    if (d.action) parts.push(`Action: ${d.action.trim()}`);
+    if (d.prayer) parts.push(`Prayer: ${d.prayer.trim()}`);
+    return parts.join('\n\n');
+  };
+
+  const validateResponse = (d?: Partial<DevotionalResponse>) => {
+    if (!d) return false;
+    const hasScripture = !!(d.scripture && d.scripture.trim().length > 0);
+    const combined = [d.empathy, d.wisdom, d.action, d.prayer].filter(Boolean).join(' ');
+    const words = combined.trim().length === 0 ? 0 : combined.trim().split(/\s+/).filter(Boolean).length;
+    const concise = !enforceConcise ? true : words <= conciseMaxWords;
+    return hasScripture && concise;
+  };
+
+  const sendMessage = async (textArg?: string, attempt = 0) => {
+    const text = (textArg ?? input).trim();
+    if (!text) return;
+
+    const userMsg: ChatMsg = { id: Date.now(), role: 'user', text, time: Date.now() };
+    setMessages((m) => [...m, userMsg]);
+    if (!textArg) setInput('');
+    setStatus(LoadingState.LOADING);
+
+    try {
+      const resp = await getSpiritualGuidance(text);
+
+      if (!validateResponse(resp) && attempt < 1) {
+        setRetrying(true);
+        const augmentation = `\n\nPlease respond concisely (<= ${conciseMaxWords} words) and include a scripture reference from the local scriptures. Do not fabricate scripture references.`;
+        const retried = await getSpiritualGuidance(text + augmentation);
+        setRetrying(false);
+        const assistantText = formatResponse(retried as DevotionalResponse);
+        const assistantMsg: ChatMsg = { id: Date.now() + 1, role: 'assistant', text: assistantText || 'Short prayer sent.', time: Date.now(), meta: retried };
+        setMessages((m) => [...m, assistantMsg]);
+        setStatus(LoadingState.SUCCESS);
+        return;
+      }
+
+      const assistantText = formatResponse(resp as DevotionalResponse);
+      const assistantMsg: ChatMsg = { id: Date.now() + 1, role: 'assistant', text: assistantText || 'Short prayer sent.', time: Date.now(), meta: resp };
+      setMessages((m) => [...m, assistantMsg]);
+      // If user opted in, persist validated response to server
+      if (persistToServer && assistantMsg.meta) {
+        try {
+          fetch('/api/spiritual/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: text, response: assistantMsg.meta }),
+          }).catch(() => {});
+        } catch (e) { /* ignore persistence failure */ }
+      }
       setStatus(LoadingState.SUCCESS);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      const fallback: ChatMsg = { id: Date.now() + 2, role: 'assistant', text: "Sorry — I couldn't get a response right now. Please try again later.", time: Date.now() };
+      setMessages((m) => [...m, fallback]);
       setStatus(LoadingState.ERROR);
     }
   };
 
-  const getShareContent = () => {
-     if (!devotional) return '';
-     return `✝️ *${devotional.title}*\n\n"${devotional.empathy}"\n\n💡 *Insight:*\n${devotional.wisdom}\n\n📖 *Scripture:*\n${devotional.scripture}\n\n🙏 *Prayer:*\n${devotional.prayer}\n\n_Received from RCCG Peculiar Treasure Assembly_`;
+  const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (status !== LoadingState.LOADING) sendMessage(); } };
+
+  const copyMessage = async (m: ChatMsg) => {
+    const text = m.meta ? `Title: ${m.meta.title ?? ''}\n\n${formatResponse(m.meta as DevotionalResponse)}` : m.text;
+    try { await navigator.clipboard.writeText(text); setCopiedMessageId(m.id); setTimeout(() => setCopiedMessageId(null), 2000); } catch (e) { /* ignore */ }
   };
 
-  const copyToClipboard = () => {
-     if (!devotional) return;
-     const text = getShareContent();
-     navigator.clipboard.writeText(text);
-     setCopied(true);
-     setTimeout(() => setCopied(false), 2000);
-  };
+  const clearConversation = () => { setMessages([]); localStorage.removeItem(MESSAGES_KEY); };
 
-  const handleWhatsappShare = () => {
-    const text = encodeURIComponent(getShareContent());
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-  };
-
-  const handleNativeShare = async () => {
-    const text = getShareContent();
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: devotional?.title,
-          text: text,
-          url: window.location.href
-        });
-      } catch (err) {
-        copyToClipboard();
-      }
-    } else {
-      copyToClipboard();
-    }
-  };
+  const themeStyle: React.CSSProperties = { fontFamily, fontSize: `${fontSize}px` };
+  const bubbleStyle = (isUser: boolean): React.CSSProperties => ({ borderRadius: `${borderRadius}px` });
 
   return (
-    <section id="devotional" className="py-32 bg-white relative">
-      <div className="max-w-4xl mx-auto px-6 lg:px-8">
-        
-        <div className="text-center mb-16">
-           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 mb-6">
-              <Sparkles size={14} className="text-rccg-red" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Spiritual Direction</span>
-           </div>
-           <h2 className="text-4xl md:text-5xl font-serif text-black mb-6">How can we pray with you?</h2>
-           <p className="text-lg text-gray-500 font-light">
-              Share what's on your heart. Receive deep, specific, and biblical wisdom tailored for your situation.
-           </p>
+    <section className="py-12" style={{ background: '#061827' }}>
+      <div className="max-w-2xl mx-auto rounded-xl overflow-hidden shadow-lg" style={themeStyle}>
+
+        <div className="flex items-center gap-4 px-5 py-4" style={{ background: 'linear-gradient(90deg,#071022,#0b1830)' }}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#274060,#0ea5a3)' }}>
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <div style={{ color: 'white', fontWeight: 600 }}>AI Spiritual Companion</div>
+            <div style={{ color: '#9fb4c2', fontSize: Math.max(12, fontSize - 2) }}>Short, scripture-backed guidance (uses local RAG)</div>
+          </div>
+
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ color: '#9fb4c2', fontSize: 12 }}>{retrying ? 'Enforcing concise responses...' : ''}</div>
+            <button onClick={() => setShowSettings((s) => !s)} style={{ color: '#9fb4c2', background: 'transparent', border: '1px solid rgba(255,255,255,0.04)', padding: '6px 8px', borderRadius: 8 }}>Settings</button>
+          </div>
         </div>
 
-        {/* Input Area */}
-        {!devotional && (
-           <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-gray-200/50 p-2">
-              <div className="relative">
-                 <textarea
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="I'm feeling overwhelmed and need peace..."
-                    className="w-full h-40 p-6 text-lg font-light text-black placeholder-gray-300 resize-none outline-none bg-transparent"
-                    disabled={status === LoadingState.LOADING}
-                 />
-                 <div className="flex justify-between items-center px-4 pb-4">
-                    <span className="text-xs text-gray-300 font-medium uppercase tracking-wider">AI Pastoral Care</span>
-                    <button 
-                       onClick={handleGenerate}
-                       disabled={!input.trim() || status === LoadingState.LOADING}
-                       className="flex items-center gap-2 px-6 py-3 bg-rccg-red text-white rounded-xl text-sm font-bold uppercase tracking-widest hover:bg-rccg-red/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-rccg-red/30"
-                    >
-                       {status === LoadingState.LOADING ? 'Interceding...' : 'Receive Counsel'} <Send size={14} />
-                    </button>
-                 </div>
-              </div>
-           </div>
+        {showSettings && (
+          <div style={{ padding: 12, background: '#071827', borderBottom: '1px solid #0f1724', display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              <input type="checkbox" checked={enforceConcise} onChange={(e) => setEnforceConcise(e.target.checked)} style={{ marginRight: 8 }} />
+              Enforce concise
+            </label>
+
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              <input type="checkbox" checked={persistToServer} onChange={(e) => setPersistToServer(e.target.checked)} style={{ marginRight: 8 }} />
+              Persist to server (opt-in)
+            </label>
+
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              Max words:
+              <input type="number" value={conciseMaxWords} onChange={(e) => setConciseMaxWords(Math.max(20, Number(e.target.value || 80)))} style={{ marginLeft: 8, width: 72, padding: 4, borderRadius: 6, border: '1px solid #123045', background: '#021322', color: '#dfeff6' }} />
+            </label>
+
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              Font:
+              <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)} style={{ marginLeft: 8, padding: 4, borderRadius: 6, background: '#021322', color: '#dfeff6', border: '1px solid #123045' }}>
+                <option value={'Inter, system-ui, Arial'}>Inter (default)</option>
+                <option value={'Georgia, serif'}>Georgia (serif)</option>
+                <option value={'ui-sans-serif, system-ui, -apple-system'}>System Sans</option>
+              </select>
+            </label>
+
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              Font size:
+              <input type="range" min={12} max={20} value={fontSize} onChange={(e) => setFontSize(Number(e.target.value))} style={{ marginLeft: 8 }} />
+            </label>
+
+            <label style={{ color: '#cfe6ef', fontSize: 13 }}>
+              Roundness:
+              <input type="range" min={6} max={24} value={borderRadius} onChange={(e) => setBorderRadius(Number(e.target.value))} style={{ marginLeft: 8 }} />
+            </label>
+
+            <button onClick={clearConversation} style={{ marginLeft: 'auto', background: '#153a44', color: '#dff6fb', padding: '8px 10px', borderRadius: 8, border: 'none' }}>Clear</button>
+          </div>
         )}
 
-        {/* Result Card */}
-        {devotional && (
-           <div className="animate-fade-in-up max-w-3xl mx-auto">
-              <div className="bg-[#FFFCF8] border border-[#F0EAE0] rounded-xl p-8 md:p-16 relative shadow-sm">
-                 
-                 <button onClick={() => { setDevotional(null); setInput(''); }} className="absolute top-6 right-6 text-gray-300 hover:text-black transition-colors">
-                    <X size={20} />
-                 </button>
+        <div ref={chatRef} style={{ padding: 16, height: 380, overflow: 'auto', background: '#071827', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {messages.length === 0 && (
+            <div style={{ textAlign: 'center', color: '#9fb4c2', marginTop: 36 }}>Ask briefly; answers will be concise and scripture-centered.</div>
+          )}
 
-                 <div className="text-center mb-8">
-                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">{devotional.title}</p>
-                 </div>
-
-                 <div className="space-y-10">
-                    
-                    {/* Empathy */}
-                    <p className="text-xl text-gray-500 font-serif italic text-center leading-relaxed">
-                       "{devotional.empathy}"
-                    </p>
-
-                    <div className="w-12 h-px bg-rccg-gold mx-auto"></div>
-
-                    {/* Main Wisdom */}
-                    <div className="max-w-2xl mx-auto">
-                       <p className="text-2xl md:text-3xl text-gray-900 font-serif text-center leading-snug mb-8">
-                          {devotional.wisdom}
-                       </p>
-                       
-                       <div className="flex items-center justify-center gap-2 text-gray-400 text-sm uppercase tracking-widest font-bold">
-                          <BookOpen size={14} />
-                          {devotional.scripture}
-                       </div>
-                    </div>
-
-                    {/* Action & Prayer */}
-                    <div className="grid md:grid-cols-2 gap-8 mt-8 pt-8 border-t border-gray-100">
-                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                           <div className="flex items-center gap-2 mb-3 text-rccg-blue">
-                              <Feather size={16} />
-                              <span className="text-xs font-bold uppercase tracking-widest">One Step</span>
-                           </div>
-                           <p className="text-gray-700 text-sm leading-relaxed font-medium">{devotional.action}</p>
-                        </div>
-
-                        <div className="bg-rccg-red/5 p-6 rounded-xl border border-rccg-red/10">
-                           <div className="flex items-center gap-2 mb-3 text-rccg-red">
-                              <Sparkles size={16} />
-                              <span className="text-xs font-bold uppercase tracking-widest">Prayer</span>
-                           </div>
-                           <p className="text-gray-800 font-serif italic text-sm leading-relaxed">"{devotional.prayer}"</p>
-                        </div>
-                    </div>
-                 </div>
-
-                 {/* Share Actions */}
-                 <div className="mt-12 pt-8 border-t border-gray-100">
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <button 
-                           onClick={handleWhatsappShare}
-                           className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors text-xs font-bold uppercase tracking-wider"
-                        >
-                           <MessageCircle size={16} /> WhatsApp
-                        </button>
-
-                        <button 
-                           onClick={handleNativeShare}
-                           className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors text-xs font-bold uppercase tracking-wider"
-                        >
-                           <Share2 size={16} /> Share
-                        </button>
-
-                        <button 
-                           onClick={copyToClipboard}
-                           className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors text-xs font-bold uppercase tracking-wider"
-                        >
-                           {copied ? <Check size={16} /> : <Copy size={16} />}
-                           {copied ? 'Copied' : 'Copy'}
-                        </button>
-                    </div>
-                 </div>
+          {messages.map((m) => (
+            <div key={m.id} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+              <div style={{ background: m.role === 'user' ? 'linear-gradient(135deg,#0ea5a3,#2563eb)' : '#0b1220', color: m.role === 'user' ? '#fff' : '#d9eef6', padding: 12, maxWidth: '78%', borderRadius: `${borderRadius}px` }}>
+                <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.4 }}>{m.text}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 12, color: '#9fb4c2' }}>
+                  <div>{new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                  <button onClick={() => copyMessage(m)} style={{ background: 'transparent', border: 'none', color: '#9fb4c2', cursor: 'pointer' }}>{copiedMessageId === m.id ? 'Copied' : 'Copy'}</button>
+                </div>
               </div>
-           </div>
-        )}
+            </div>
+          ))}
 
+          {status === LoadingState.LOADING && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 12, background: '#0b1220', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Sparkles size={14} style={{ color: '#0ea5a3', opacity: 0.9 }} />
+              </div>
+              <div style={{ background: '#0b1220', padding: 10, borderRadius: 10, color: '#7eaeb8' }}>Thinking briefly…</div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, padding: 12, background: '#071827', borderTop: '1px solid #0f1724' }}>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKeyDown}
+            rows={2}
+            placeholder="Type a short question..."
+            style={{ flex: 1, resize: 'none', borderRadius: 8, background: '#021322', border: '1px solid #123045', color: '#dfeff6', padding: 10 }}
+            disabled={status === LoadingState.LOADING}
+          />
+          <button onClick={() => sendMessage()} disabled={!input.trim() || status === LoadingState.LOADING} style={{ padding: 10, borderRadius: 10, background: 'linear-gradient(135deg,#0ea5a3,#2563eb)', color: '#fff', border: 'none' }}>
+            <Send size={18} />
+          </button>
+        </div>
       </div>
     </section>
   );

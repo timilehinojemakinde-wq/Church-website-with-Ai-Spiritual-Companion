@@ -7,6 +7,7 @@ import Mission from './components/Mission';
 import Services from './components/Services';
 import Events from './components/Events';
 import Giving from './components/Giving';
+import VideoSlider from './components/VideoSlider';
 import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -98,6 +99,7 @@ const App: React.FC = () => {
           isAuthLoading={isAuthLoading}
         />
         <Giving />
+        <VideoSlider />
         <Events />
         <Mission />
         <Leadership />

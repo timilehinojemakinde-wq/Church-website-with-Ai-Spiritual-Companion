@@ -37,19 +37,23 @@ const Hero: React.FC = () => {
   const responseRef = useRef<HTMLDivElement>(null);
 
   // Handle AI Counseling Request
-  const handleCounselingRequest = async () => {
-    if (!input.trim()) return;
-    setStatus(LoadingState.LOADING);
-    stopAudio();
-    try {
-      const aiReply = await getSpiritualGuidance(input);
-      setResponse(aiReply);
+const handleCounselingRequest = async () => {
+  if (!input.trim()) return;  // ignore empty input
+
+   setStatus(LoadingState.LOADING); // show loading
+  stopAudio(); // stop any playing audio
+
+  try {
+      // Use shared client-side service which proxies to the server `/api/spiritual` endpoint.
+      const data = await getSpiritualGuidance(input);
+      setResponse(data as DevotionalResponse);
       setStatus(LoadingState.SUCCESS);
-    } catch (error) {
-      console.error(error);
-      setStatus(LoadingState.ERROR);
-    }
-  };
+
+      } catch (error) {
+         console.error(error);
+         setStatus(LoadingState.ERROR);
+      }
+};
 
   const handleAudioPlayback = async () => {
     if (!response) return;

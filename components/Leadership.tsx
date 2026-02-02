@@ -10,7 +10,7 @@ interface Leader {
 
 const leaders: Leader[] = [
   {
-    name: "Pastor JOSEPH EBATA",
+    name: "Pastor JOSEPH EBATA (APICP)",
     role: "Pastor In Charge of Parish",
     image: "/images/pastor.jpg",
     bio: "A visionary leader committed to teaching the undiluted word of God and raising a people of peculiarity and power."

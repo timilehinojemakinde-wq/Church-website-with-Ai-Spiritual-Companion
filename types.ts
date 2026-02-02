@@ -17,6 +17,8 @@ export interface DevotionalResponse {
   wisdom: string;      // A concise, profound, life-changing insight (The main statement)
   action: string;      // A single, simple, immediate physical or spiritual step
   prayer: string;      // A short, powerful declaration
+  schemaVersion?: 'DevotionalResponseV1';
+  wordCount?: number;
 }
 
 export enum LoadingState {

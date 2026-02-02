@@ -12,11 +12,11 @@ const events = [
     location: "Main Auditorium"
   },
   {
-    day: "10",
+    day: "28",
     month: "FEB",
-    title: "Night Vigil",
-    time: "10:00 PM",
-    desc: "Monthly vigil for spiritual warfare and breakthrough prayers.",
+    title: "DESTINY HOUR PRAYER  MEETING",
+    time: "8:00AM TO 10:00AM",
+    desc: "IT IS MY TURN TO SHINE.",
     location: "Main Auditorium"
   },
   {
