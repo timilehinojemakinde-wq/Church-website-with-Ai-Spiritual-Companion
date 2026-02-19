@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
 
          <p className="text-black-300 text-sm font-light">
             &copy; {new Date().getFullYear()} RCCG THE AMBASSADORS. <br />
-            Website Built by HGI Technologies.
+            Website Built by TIMIAFRICA Technologies.
          </p>
       </div>
     </footer>
