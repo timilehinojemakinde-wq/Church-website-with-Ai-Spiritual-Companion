@@ -63,7 +63,7 @@ const YouTubeSlider = () => {
   };
 
   return (
-    <div className="youtube-slider-container">
+    <div section id="videos" className="youtube-slider-container">
       <div className="slider-wrapper">
         <button
           onClick={slideLeft}
