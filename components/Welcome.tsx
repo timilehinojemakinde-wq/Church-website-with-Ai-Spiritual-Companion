@@ -12,12 +12,20 @@ interface WelcomeProps {
 const Welcome: React.FC<WelcomeProps> = ({ currentUser, onLogin, isAuthLoading }) => {
   
   const handleUploadClick = () => {
+   if (!currentUser) {
+      onLogin();
+   } else {
     // Navigate to socials view immediately. The Gallery component will handle the login prompt if needed.
     window.location.hash = 'socials';
+   }
   };
 
   const handleAppLaunch = () => {
-    window.location.hash = 'socials';
+   if (!currentUser) {
+      onLogin();
+   } else { 
+   window.location.hash = 'socials';
+   }
   };
 
   return (
