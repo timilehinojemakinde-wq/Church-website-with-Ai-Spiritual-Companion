@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Camera, LogIn, Home, Music, Calendar, Heart, Users, MapPin, ChevronRight } from 'lucide-react';
+import { X, Camera, LogIn, Home, Music, Calendar, Heart, Users, MapPin, ChevronRight, Film, BookOpen, AlignLeft } from 'lucide-react';
 
 interface NavbarProps {
   currentUser?: { name: string; email: string } | null;
@@ -9,22 +9,18 @@ interface NavbarProps {
 
 const navItems = [
   { label: 'Home', path: '#', icon: Home },
-  { label: 'Worship', path: '#services', icon: Music },
-  { label: 'Events', path: '#events', icon: Calendar },
+  { label: 'Church Services', path: '#services', icon: Music },
+  { label: 'Ambassador Socials', path: '#socials', icon: Camera },
   { label: 'Giving', path: '#giving', icon: Heart },
-  { label: 'Socials', path: '#socials', icon: Camera },
+  { label: 'Videos', path: '#videos', icon: Film },
+  { label: 'Upcoming Events', path: '#events', icon: Calendar },
+  { label: 'Our Mandate', path: '#mission', icon: BookOpen },
+  { label: 'Leadership', path: '#leadership', icon: Users },
   { label: 'Visit Us', path: '#contact', icon: MapPin },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -37,45 +33,41 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
 
   return (
     <>
-      <nav
-        className={`fixed w-full z-50 bg-rccg-red py-4 shadow-lg" ${
-          isScrolled
-            ? 'bg-rccg-red/98 backdrop-blur-md py-3 shadow-xl'
-            : 'bg-rccg-red py-4 shadow-lg'
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 lg:px-12">
-          <div className="flex justify-between items-center">
+      {/* MAIN NAVBAR */}
+      <nav className="fixed w-full z-50 bg-rccg-red py-4 shadow-lg">
+        <div className="w-full px-0 lg:px-12">
+          <div className="flex items-center gap-3">
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsOpen(true)}
-                className="flex flex-col justify-center items-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-200 border border-white/20 gap-1.5 shrink-0"
-                aria-label="Open menu"
-              >
-                <span className="w-5 h-0.5 bg-white rounded-full"></span>
-                <span className="w-4 h-0.5 bg-white rounded-full self-start ml-2.5"></span>
-                <span className="w-5 h-0.5 bg-white rounded-full"></span>
-              </button>
+            {/* Hamburger — flush to left edge */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="flex flex-col justify-center items-start pl-3 pr-4 py-2 gap-[5px] shrink-0 hover:opacity-70 transition-opacity"
+              aria-label="Open menu"
+            >
+              <span className="w-6 h-[2px] bg-white rounded-full"></span>
+              <span className="w-5 h-[2px] bg-white rounded-full"></span>
+              <span className="w-6 h-[2px] bg-white rounded-full"></span>
+            </button>
 
-              <div className="flex items-center gap-2.5">
-                <img
-                  src="/logo/logo.png"
-                  alt="RCCG Ambassadors Logo"
-                  className="h-12 md:h-14 w-auto object-contain"
-                />
-                <div className="flex flex-col leading-tight text-white">
-                  <p className="text-[10px] md:text-xs font-extrabold uppercase tracking-wide opacity-90">
-                    The Redeemed Christian Church of God
-                  </p>
-                  <p className="text-sm md:text-lg font-bold tracking-tight">
-                    The Ambassadors
-                  </p>
-                </div>
+            {/* Logo + Church Name */}
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/logo/logo.png"
+                alt="RCCG Ambassadors Logo"
+                className="h-12 md:h-14 w-auto object-contain"
+              />
+              <div className="flex flex-col leading-tight text-white">
+                <p className="text-[10px] md:text-xs font-extrabold uppercase tracking-wide opacity-90">
+                  The Redeemed Christian Church of God
+                </p>
+                <p className="text-sm md:text-lg font-bold tracking-tight">
+                  The Ambassadors
+                </p>
               </div>
             </div>
 
-            <div className="hidden lg:flex items-center gap-1 bg-white/10 border border-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+            {/* Desktop Nav Links — center */}
+            <div className="hidden lg:flex items-center gap-1 bg-white/10 border border-white/10 backdrop-blur-sm px-4 py-2 rounded-full ml-auto mr-4">
               {navItems.map((item) => (
                 <a
                   key={item.label}
@@ -88,41 +80,11 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
-              {currentUser ? (
-                <div className="hidden lg:flex items-center gap-3">
-                  <span className="text-white/80 text-xs font-semibold">
-                    {currentUser.name}
-                  </span>
-                  <button
-                    onClick={onLogout}
-                    className="text-xs font-bold uppercase tracking-widest text-white border border-white/30 px-4 py-2 rounded-full hover:bg-white hover:text-rccg-red transition-all duration-200"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={onLoginClick}
-                  className="hidden lg:flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-white text-rccg-red px-4 py-2 rounded-full hover:bg-yellow-400 hover:text-rccg-red transition-all duration-200 shadow-lg"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  Login
-                </button>
-              )}
-
-              <button
-                onClick={onLoginClick}
-                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition-all border border-white/20 text-white"
-              >
-                <LogIn className="w-4 h-4" />
-              </button>
-            </div>
-
           </div>
         </div>
       </nav>
 
+      {/* OVERLAY */}
       <div
         className={`fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-all duration-400 ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
@@ -130,12 +92,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
         onClick={() => setIsOpen(false)}
       />
 
+      {/* SLIDE-OUT DRAWER */}
       <div
         className={`fixed top-0 left-0 h-full w-[300px] z-[60] bg-[#0A1628] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between p-5 border-b border-white/10">
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between p-5 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <img
               src="/logo/logo.png"
@@ -155,8 +119,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
           </button>
         </div>
 
-        <div className="flex flex-col py-4 flex-1 overflow-y-auto">
-          <p className="text-[9px] font-bold uppercase tracking-[3px] text-white/30 px-6 mb-2">
+        {/* Scrollable Nav Links with scrollbar */}
+        <div
+          className="flex flex-col py-4 flex-1 overflow-y-auto"
+          style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#C9A84C44 transparent',
+          }}
+        >
+          <p className="text-[9px] font-bold uppercase tracking-[3px] text-white/30 px-6 mb-2 shrink-0">
             Navigation
           </p>
 
@@ -167,37 +138,22 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
                 key={item.label}
                 href={item.path}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center justify-between px-6 py-4 text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group border-b border-white/5"
-                style={{ animationDelay: `${index * 50}ms` }}
+                className="flex items-center justify-between px-6 py-4 text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group border-b border-white/5 shrink-0"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-yellow-500/20 flex items-center justify-center transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-white/5 group-hover:bg-yellow-500/20 flex items-center justify-center transition-all shrink-0">
                     <Icon className="w-4 h-4 group-hover:text-yellow-400 transition-colors" />
                   </div>
                   <span className="font-semibold text-sm tracking-wide">{item.label}</span>
                 </div>
-                <ChevronRight className="w-4 h-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                <ChevronRight className="w-4 h-4 opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" />
               </a>
             );
           })}
-
-          <div className="my-4 mx-6 border-t border-white/10" />
-
-          <a
-            href="#socials"
-            onClick={() => setIsOpen(false)}
-            className="mx-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-500/20 to-yellow-600/10 border border-yellow-500/30 text-yellow-400 hover:border-yellow-500/60 transition-all group"
-          >
-            <Camera className="w-5 h-5" />
-            <div>
-              <p className="font-bold text-sm">Ambassador Socials</p>
-              <p className="text-[10px] text-yellow-400/60">Share your worship moments</p>
-            </div>
-            <ChevronRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-all" />
-          </a>
         </div>
 
-        <div className="p-5 border-t border-white/10">
+        {/* Drawer Footer — Login/Profile */}
+        <div className="p-5 border-t border-white/10 shrink-0">
           {currentUser ? (
             <div>
               <p className="text-white/50 text-xs mb-1">Signed in as</p>
