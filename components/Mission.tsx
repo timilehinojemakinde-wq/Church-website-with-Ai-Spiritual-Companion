@@ -3,7 +3,7 @@ import { Target, Eye } from 'lucide-react';
 
 const Mission: React.FC = () => {
   return (
-    <section id="our-mandate" className="py-24 bg-rccg-blue text-white relative overflow-hidden">
+    <section id="mission" className="py-24 bg-rccg-blue text-white relative overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-rccg-green opacity-20 blur-[100px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-rccg-red opacity-20 blur-[100px] rounded-full pointer-events-none"></div>

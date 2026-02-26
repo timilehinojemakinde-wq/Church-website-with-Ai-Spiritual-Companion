@@ -186,7 +186,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
                   onClick={() => { onLoginClick?.(); setIsOpen(false); }}
                   className="text-yellow-400 text-xs font-bold hover:text-yellow-300 transition-colors"
                 >
-                  Tap to get started →
+                  Get in Ambassador Socials →
                 </button>
               </div>
             </div>

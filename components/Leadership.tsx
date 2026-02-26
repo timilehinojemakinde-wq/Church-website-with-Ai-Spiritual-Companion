@@ -30,8 +30,9 @@ const leaders: Leader[] = [
 ];
 
 const Leadership: React.FC = () => {
+  
   return (
-    <section className="py-32 bg-gray-50 relative">
+    <section id="leadership" className="py-32 bg-gray-50 relative">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         
         <div className="text-center mb-20 animate-fade-in-up">
