@@ -169,7 +169,7 @@ const Hero: React.FC = () => {
               Welcome to The Ambassadors. A family bound by love, fueled by prayer, and destined for greatness.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-nowrap items-center gap-4">
               <a
                 href="#services"
                 className="px-10 py-4 bg-rccg-red text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 border border-rccg-red"
@@ -178,7 +178,7 @@ const Hero: React.FC = () => {
               </a>
               <button
                 onClick={() => setShowMembershipForm(true)}
-                className="px-10 py-4 bg-transparent text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-white hover:text-rccg-red transition-all duration-300 shadow-xl hover:-translate-y-1 border border-white"
+                className="px-10 py-4 bg-transparent text-white text-sm font-bold uppercase whitespace-nowrap tracking-widest rounded-full hover:bg-white hover:text-rccg-red transition-all duration-300 shadow-xl hover:-translate-y-1 border border-white"
               >
                 Membership Registration
               </button>
