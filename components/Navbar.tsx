@@ -9,8 +9,8 @@ interface NavbarProps {
 
 const navItems = [
   { label: 'Home', path: '#top', icon: Home },
-  { label: 'Services', path: '#services', icon: Music },
-  { label: 'Socials', path: '#socials-preview', icon: Camera },
+  { label: 'Services/ Worship', path: '#services', icon: Music },
+  { label: 'Ambassadors Socials', path: '#socials-preview', icon: Camera },
   { label: 'Giving', path: '#giving', icon: Heart },
   { label: 'Videos', path: '#videos', icon: Film },
   { label: 'Upcoming Events', path: '#events', icon: Calendar },

@@ -8,12 +8,7 @@ const YouTubeSlider = () => {
 
   // Example YouTube videos - replace with your actual video IDs and data
   const videos = [
-    {
-      id: 'VTN2VKQTo2Q',
-      title: 'Conversation With Pastor Ibukun Efuntayo - Chairman WEMABOD NIGERIA',
-      views: '223',
-      duration: '28.02'
-    },
+    
     {
       id: 'YhAWD6-qNkk',
       title: 'Every Tongue and Tribe 2025 YORUBA DAY',

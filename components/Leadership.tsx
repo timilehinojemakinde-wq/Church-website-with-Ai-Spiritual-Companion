@@ -16,7 +16,7 @@ const leaders: Leader[] = [
     bio: "A visionary leader committed to teaching the undiluted word of God and raising a people of peculiarity and power."
   },
   {
-    name: "Pastor (Mrs.) VICTORIA EBATA",
+    name: "Pastor (Mrs.) GLORIA EBATA",
     role: "Wife of PICP",
     image: "/images/mummypastor.jpg", // High quality placeholder since real image is missing
     bio: "A pillar of support and grace, dedicated to the spiritual growth of women and the welfare of the church family."
