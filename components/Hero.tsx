@@ -169,7 +169,7 @@ const Hero: React.FC = () => {
               Welcome to The Ambassadors. A family bound by love, fueled by prayer, and destined for greatness.
             </p>
 
-            <div className="flex flex-nowrap items-center gap-4">
+            <div className="flex flex-wrap gap-4 items-center">
               <a
                 href="#services"
                 className="px-10 py-4 bg-rccg-red text-white text-sm font-bold uppercase tracking-widest rounded-full hover:bg-red-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 border border-rccg-red"
@@ -178,7 +178,7 @@ const Hero: React.FC = () => {
               </a>
               <button
                 onClick={() => setShowMembershipForm(true)}
-                className="px-10 py-4 bg-transparent text-white text-sm font-bold uppercase whitespace-nowrap tracking-widest rounded-full hover:bg-white hover:text-rccg-red transition-all duration-300 shadow-xl hover:-translate-y-1 border border-white"
+                className="px-10 py-4 bg-transparent text-white text-sm font-bold uppercase tracking-widest rounded-full border-2 border-white/50 hover:border-white hover:bg-white/10 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 Membership Registration
               </button>
@@ -187,7 +187,7 @@ const Hero: React.FC = () => {
 
           {/* Right Column: AI Companion */}
           <div className="lg:col-span-5 relative flex justify-center lg:justify-end order-2 lg:order-none">
-            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-slide-in">
+            <div className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-gray-200 bg-white/90 backdrop-blur-sm">
               
               <div className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div className="flex items-center gap-3">
