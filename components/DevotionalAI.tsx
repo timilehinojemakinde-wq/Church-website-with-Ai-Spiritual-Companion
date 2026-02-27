@@ -151,7 +151,7 @@ const DevotionalAI: React.FC = () => {
 
   return (
     <section className="py-12" style={{ background: '#061827' }}>
-      <div className="max-w-2xl mx-auto rounded-xl overflow-hidden shadow-lg" style={themeStyle}>
+      <div className="max-w-4xl mx-auto rounded-xl overflow-hidden shadow-lg" style={themeStyle}>
 
         <div className="flex items-center gap-4 px-5 py-4" style={{ background: 'linear-gradient(90deg,#071022,#0b1830)' }}>
           <div className="w-12 h-12 rounded-full flex items-center justify-center text-white" style={{ background: 'linear-gradient(135deg,#274060,#0ea5a3)' }}>

@@ -14,6 +14,11 @@ export default {
           gold: '#C5A059',
           cream: '#FAFAF5',
           surface: '#FFFFFF',
+        },
+        brand: {
+          olive: '#5C6B3A',
+          cream: '#F9F6F0',
+          ink: '#1A1A1A',
         }
       },
       fontFamily: {

@@ -187,7 +187,7 @@ const Hero: React.FC = () => {
 
           {/* Right Column: AI Companion */}
           <div className="lg:col-span-5 relative flex justify-center lg:justify-end order-2 lg:order-none">
-            <div className="relative w-25 max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-slide-in">
+            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-slide-in">
               
               <div className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
                 <div className="flex items-center gap-3">

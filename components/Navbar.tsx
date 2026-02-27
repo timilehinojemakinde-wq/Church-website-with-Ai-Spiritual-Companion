@@ -211,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
           <div
             ref={scrollRef}
             onScroll={handleScroll}
-            className="flex flex-col py-2 flex-1 overflow-y-auto"
+            className="flex flex-col py-2 flex-1 overflow-y-auto drawer-scroll"
             style={{
               scrollbarWidth: 'thin',
               scrollbarColor: '#C9A84C #0A1628',
