@@ -11,6 +11,7 @@ import Gallery from './components/Gallery';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Welcome from './components/Welcome';
+import { FirstTimerModal } from './components/FirstTimerModal'; // ← NEW
 import { supabase } from './supabaseClient';
 import { User } from './types';
 
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showFirstTimerModal, setShowFirstTimerModal] = useState(false); // ← NEW
   const [authView, setAuthView] = useState<'login' | 'signup'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -112,7 +114,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 scroll-smooth">
-      
+
       {/* Auth Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center pt-0 justify-center bg-black/70 backdrop-blur-sm pt 30">
@@ -199,7 +201,22 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <Navbar currentUser={currentUser} onLoginClick={openLogin} onLogout={handleLogout} />
+      {/* ← NEW: First Timer Modal */}
+      <FirstTimerModal
+        isOpen={showFirstTimerModal}
+        onClose={() => setShowFirstTimerModal(false)}
+      />
+
+      {/*
+        Pass onFirstTimerClick to Navbar so the drawer menu item can open the modal.
+        Your Navbar component should call this prop when the "First Timer" item is tapped.
+      */}
+      <Navbar
+        currentUser={currentUser}
+        onLoginClick={openLogin}
+        onLogout={handleLogout}
+        onFirstTimerClick={() => setShowFirstTimerModal(true)} // ← NEW
+      />
       
       {view === 'socials' ? (
         <main className="flex-grow pt-20">
@@ -245,4 +262,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App
+export default App;

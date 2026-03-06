@@ -5,6 +5,7 @@ interface NavbarProps {
   currentUser?: { name: string; email: string } | null;
   onLoginClick?: () => void;
   onLogout?: () => void;
+  onFirstTimerClick?: () => void;
 }
 
 const navItems = [
@@ -19,7 +20,7 @@ const navItems = [
   { label: 'Visit Us', path: '#visit', icon: MapPin },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout, onFirstTimerClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -52,18 +53,15 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
       return;
     }
 
-    // Small delay to let drawer close before scrolling
+    const id = path.replace('#', '');
     
-      const id = path.replace('#', '');
-      
-      setTimeout(() => {
+    setTimeout(() => {
       const element = document.getElementById(id);
       if (element) {
-        const nabvarHeight = 64; // Approximate height of the navbar
-        const elementPosition = element.getBoundingClientRect().top + window.scrollY - nabvarHeight;
+        const navbarHeight = 64;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY - navbarHeight;
         window.scrollTo({ top: elementPosition, behavior: 'smooth' });
       }
-       
     }, 500);
   };
 
@@ -163,7 +161,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
           </button>
         </div>
 
-        {/* Profile Avatar Section — above nav links */}
+        {/* Profile Avatar Section */}
         <div className="px-6 py-4 border-b border-white/10 shrink-0">
           {currentUser ? (
             <div className="flex items-center gap-3">
@@ -193,7 +191,26 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
           )}
         </div>
 
-        {/* Nav Links — scrollable with VISIBLE side indicator */}
+        {/* ✅ FIRST TIMER BANNER — sits just above the nav list */}
+        <div className="px-4 pt-3 pb-1 shrink-0">
+          <button
+            onClick={() => { onFirstTimerClick?.(); setIsOpen(false); }}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/20 transition-all group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center shrink-0">
+                <span className="text-base">🙋</span>
+              </div>
+              <div className="text-left">
+                <p className="text-yellow-400 font-bold text-sm leading-none">First Timer?</p>
+                <p className="text-yellow-500/60 text-[10px] mt-0.5">Register & say hello 👋</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-yellow-400 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all shrink-0" />
+          </button>
+        </div>
+
+        {/* Nav Links — scrollable with side indicator */}
         <div className="flex flex-1 overflow-hidden">
 
           {/* Side vertical gold indicator */}
@@ -207,7 +224,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
             />
           </div>
 
-          {/* Scrollable list — scrollbar VISIBLE */}
+          {/* Scrollable list */}
           <div
             ref={scrollRef}
             onScroll={handleScroll}
@@ -217,10 +234,6 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
               scrollbarColor: '#C9A84C #0A1628',
             }}
           >
-            <p className="text-[9px] font-bold uppercase tracking-[3px] text-white/30 px-5 mb-1 shrink-0">
-              Navigation
-            </p>
-
             {navItems.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -242,7 +255,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser, onLoginClick, onLogout }) 
           </div>
         </div>
 
-        {/* Drawer Footer — single Login button only when not logged in */}
+        {/* Drawer Footer */}
         <div className="p-5 border-t border-white/10 shrink-0">
           {currentUser ? (
             <button
